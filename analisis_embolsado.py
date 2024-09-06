@@ -108,6 +108,32 @@ class AnalisisEmbolsadoApp:
                 nombre_datos = "DATOS EMBOLSADO"
                 # Ligar df_embolsado con df_material_Cabeza
                 datos_seleccionados = datos_seleccionados.merge(df_material_Cabeza, left_on='cvepdto', right_on='cve_producto', how='left')
+                
+                # Crear el DataFrame de porcentajes
+                df_porcentajes = df_calidad.copy()
+
+                # Mostrar el DataFrame de porcentajes en una nueva ventana
+                porcentajes_window = tk.Toplevel(self.root)
+                porcentajes_window.title("DataFrame de Porcentajes")
+                tree_porcentajes = ttk.Treeview(porcentajes_window)
+                tree_porcentajes.pack(expand=True, fill='both')
+                vsb_porcentajes = ttk.Scrollbar(porcentajes_window, orient="vertical", command=tree_porcentajes.yview)
+                hsb_porcentajes = ttk.Scrollbar(porcentajes_window, orient="horizontal", command=tree_porcentajes.xview)
+                tree_porcentajes.configure(yscrollcommand=vsb_porcentajes.set, xscrollcommand=hsb_porcentajes.set)
+                vsb_porcentajes.pack(side='right', fill='y')
+                hsb_porcentajes.pack(side='bottom', fill='x')
+                tree_porcentajes["columns"] = list(df_porcentajes.columns)
+                tree_porcentajes["show"] = "headings"
+
+                for col in tree_porcentajes["columns"]:
+                    tree_porcentajes.heading(col, text=col)
+
+                for index, row in df_porcentajes.iterrows():
+                    tree_porcentajes.insert("", "end", values=list(row))
+
+                for col in tree_porcentajes["columns"]:
+                    max_len = max(df_porcentajes[col].astype(str).apply(len).max(), len(col))
+                    tree_porcentajes.column(col, width=max_len * 10)
             else:
                 datos_seleccionados = df_iqf
                 nombre_datos = "DATOS IQF"
