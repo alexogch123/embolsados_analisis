@@ -112,6 +112,15 @@ class AnalisisEmbolsadoApp:
                 # Crear el DataFrame de porcentajes
                 df_porcentajes = df_calidad.copy()
 
+                # Eliminar las columnas especificadas
+                columnas_a_eliminar = [
+                    'conv_org', 'clasif', 'grado', 'cliente', 'marca', 'segmento', 'mercado', 
+                    'producto', 'prod_especial', 'b_corte', 'broccoli_long', 'clasif_br_long', 
+                    'broccoli_diam', 'clasif_br_diam', 'br_2_corte', 'br_2_long', 'caulif_corte', 
+                    'cauliflower_long', 'cauliflower_diam', 'carrot_corte', 'mat_cabeza', 'linea', 'planta'
+                ]
+                df_porcentajes.drop(columns=columnas_a_eliminar, inplace=True)
+
                 # Mostrar el DataFrame de porcentajes en una nueva ventana
                 porcentajes_window = tk.Toplevel(self.root)
                 porcentajes_window.title("DataFrame de Porcentajes")
@@ -132,7 +141,7 @@ class AnalisisEmbolsadoApp:
                     tree_porcentajes.insert("", "end", values=list(row))
 
                 for col in tree_porcentajes["columns"]:
-                    max_len = max(df_porcentajes[col].astype(str).apply(len).max(), len(col))
+                    max_len = max(df_porcentajes[col].astype(str).apply(lambda x: len(x) if pd.notna(x) else 0).max(), len(col))
                     tree_porcentajes.column(col, width=max_len * 10)
             else:
                 datos_seleccionados = df_iqf
@@ -185,7 +194,7 @@ class AnalisisEmbolsadoApp:
                         tree.insert("", "end", values=list(row))
 
                     for col in tree["columns"]:
-                        max_len = max(datos_filtrados[col].astype(str).apply(len).max(), len(col))
+                        max_len = max(datos_filtrados[col].astype(str).apply(lambda x: len(x) if pd.notna(x) else 0).max(), len(col))
                         tree.column(col, width=max_len * 10)
 
                     def exportar_excel():
